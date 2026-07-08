@@ -1,0 +1,139 @@
+{
+  "overall_precision_so_far": 0.75,
+  "questions_completed": 4,
+  "questions_total": 15,
+  "per_question_results": [
+    {
+      "question": "Does tacrolimus work for treating vitiligo?",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "[Vitiligo. Treatment of 12 cases with topical tacrolimus].",
+          "similarity": 0.776,
+          "relevant": true
+        },
+        {
+          "title": "Effectiveness and safety of topical tacrolimus in treatment of vitiligo.",
+          "similarity": 0.762,
+          "relevant": true
+        },
+        {
+          "title": "Safety and Efficacy of Tacrolimus Ointment Alone in the Treatment of Pediatric Vitiligo: A Systematic Review and Meta-Analysis.",
+          "similarity": 0.758,
+          "relevant": true
+        },
+        {
+          "title": "Comparison of Efficacy and Safety of 0.1% Tacrolimus and 0.1% Mometasone Furoate for Adult Vitiligo",
+          "similarity": 0.757,
+          "relevant": true
+        },
+        {
+          "title": "Value of tacrolimus 0.1% in the treatment of vitiligo in the era of targeted therapy.",
+          "similarity": 0.756,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is narrowband UVB phototherapy and how effective is it for vitiligo?",
+      "precision": 0.8,
+      "retrieved_count": 5,
+      "relevant_count": 4,
+      "judgments": [
+        {
+          "title": "Phototherapy for Vitiligo.",
+          "similarity": 0.788,
+          "relevant": true
+        },
+        {
+          "title": "UVB phototherapy in the treatment of vitiligo: State of the art and clinical perspectives.",
+          "similarity": 0.773,
+          "relevant": true
+        },
+        {
+          "title": "Narrowband UVB phototherapy in vitiligo: evaluation of results in 53 patients.",
+          "similarity": 0.766,
+          "relevant": false
+        },
+        {
+          "title": "Narrowband ultraviolet B phototherapy and 308-nm excimer laser in the treatment of vitiligo: a review.",
+          "similarity": 0.749,
+          "relevant": true
+        },
+        {
+          "title": "Combined Therapy With Narrow-Band Ultraviolet B Phototherapy and Apremilast for the Treatment of Vitiligo",
+          "similarity": 0.747,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "How does ruxolitinib cream work for vitiligo repigmentation?",
+      "precision": 0.2,
+      "retrieved_count": 5,
+      "relevant_count": 1,
+      "judgments": [
+        {
+          "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
+          "similarity": 0.768,
+          "relevant": false
+        },
+        {
+          "title": "Ruxolitinib cream for treatment of vitiligo: a randomised, controlled, phase 2 trial.",
+          "similarity": 0.76,
+          "relevant": false
+        },
+        {
+          "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
+          "similarity": 0.755,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of vitiligo with topical ruxolitinib: a narrative review.",
+          "similarity": 0.748,
+          "relevant": false
+        },
+        {
+          "title": "Treatment of vitiligo with ruxolitinib cream in the TRuE-V1 and TRuE-V2 studies: a plain language summary of publication.",
+          "similarity": 0.746,
+          "relevant": false
+        }
+      ]
+    },
+    {
+      "question": "Are topical corticosteroids effective for vitiligo?",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Efficacy and Safety of Intralesional Corticosterois in the Treatment of Vitiligo",
+          "similarity": 0.729,
+          "relevant": true
+        },
+        {
+          "title": "Topical treatment and combination approaches for vitiligo: new insights, new developments.",
+          "similarity": 0.717,
+          "relevant": true
+        },
+        {
+          "title": "Betamethasone Phonophoresis For Vitiligo",
+          "similarity": 0.702,
+          "relevant": true
+        },
+        {
+          "title": "Topical treatment and combination approaches for vitiligo: new insights, new developments.",
+          "similarity": 0.691,
+          "relevant": true
+        },
+        {
+          "title": "Betamethasone Phonophoresis For Vitiligo",
+          "similarity": 0.688,
+          "relevant": true
+        }
+      ]
+    }
+  ]
+}

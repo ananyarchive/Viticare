@@ -1,0 +1,50 @@
+# --- Python (backend) ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+*.log
+
+# --- Environment variables / secrets ---
+.env
+.env.local
+.env.*.local
+env-2
+
+# --- Node / Next.js (frontend) ---
+node_modules/
+.next/
+out/
+dist/
+build/
+.turbo/
+
+# --- Data (large files, don't commit datasets) ---
+Data/raw/
+Data/registered/
+Data/segmented/
+*.zip
+*.tar.gz
+
+# --- Models (large binary files) ---
+*.pt
+*.pth
+*.onnx
+*.ckpt
+
+# --- OS / editor junk ---
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+
+# --- Database ---
+*.sqlite3
+*.db
+
+# --- Misc ---
+.pytest_cache/
+.mypy_cache/
+coverage/
