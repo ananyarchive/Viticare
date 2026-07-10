@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 REGISTERED_DIR = Path("Data/registered")
 OUTPUT_DIR = Path("Data/segmented")
 REGISTRATION_RESULTS_FILE = Path("Data/registered/registration_results.json")
+CURATION_FILE = Path("Data/curation_labels.json")
 
 
 def load_registration_status():
@@ -37,6 +38,23 @@ def load_registration_status():
             tp["output_file"]: tp["registration_status"] for tp in r["timepoints"]
         }
     return status_map
+
+
+def load_curation_exclusions():
+    """
+    Returns a dict: folder_name -> set of excluded_images filenames, from
+    Data/curation_labels.json. Empty dict if curation hasn't been run yet
+    (curation happens after segmentation, so this file may not exist the
+    first time segmentation runs).
+    """
+    if not CURATION_FILE.exists():
+        return {}
+    with open(CURATION_FILE, "r") as f:
+        curation = json.load(f)
+    return {
+        name: set(info.get("excluded_images", []))
+        for name, info in curation.items()
+    }
 
 
 def extract_subject_mask(img_bgr):
@@ -187,14 +205,21 @@ def draw_outline_and_measurements(img_bgr, contours):
     return output, measurements, area_pct
 
 
-def pick_reference_frame(images_by_name, masks):
+def pick_reference_frame(images_by_name, masks, excluded_images=frozenset()):
     """
     Picks the frame with the LARGEST detected lesion area to use as the
     reference boundary — this is usually the clearest, most confident
     detection, and avoids using a faint/ambiguous frame as the reference.
+
+    Skips any frame in excluded_images (manually flagged during curation as
+    not belonging to this patient/lesion's timeline) — using one of those as
+    the reference would silently corrupt every other frame's progress diff,
+    since they're all compared against it.
     """
     best_name, best_mask, best_area = None, None, -1
     for name, mask in masks:
+        if name in excluded_images:
+            continue
         area = int((mask > 0).sum())
         if area > best_area:
             best_name, best_mask, best_area = name, mask, area
@@ -273,7 +298,7 @@ def compute_fixed_region_diff(reference_img, region_mask, followup_img):
     }
 
 
-def process_folder(folder: Path, registration_status: dict):
+def process_folder(folder: Path, registration_status: dict, excluded_images=frozenset()):
     images = sorted(folder.iterdir())
     if len(images) < 1:
         return None
@@ -315,7 +340,7 @@ def process_folder(folder: Path, registration_status: dict):
     # its boundary is reused for all other timepoints, instead of re-detecting
     # (and possibly missing) the patch independently on every single frame.
     if len(masks) >= 2:
-        ref_name, ref_mask = pick_reference_frame(images_by_name, masks)
+        ref_name, ref_mask = pick_reference_frame(images_by_name, masks, excluded_images)
         ref_img = images_by_name[ref_name]
 
         if ref_mask is not None and (ref_mask > 0).sum() > 0:
@@ -390,10 +415,12 @@ def main():
         return
 
     registration_status = load_registration_status()
+    curation_exclusions = load_curation_exclusions()
 
     all_results = []
     for i, folder in enumerate(folders, start=1):
-        result = process_folder(folder, registration_status)
+        excluded_images = curation_exclusions.get(folder.name, frozenset())
+        result = process_folder(folder, registration_status, excluded_images)
         if result:
             all_results.append(result)
         print(f"[{i}/{len(folders)}] Processed {folder.name}: {len(result['timepoints']) if result else 0} timepoints")
