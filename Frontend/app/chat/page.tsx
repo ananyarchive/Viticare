@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 const API_BASE = "http://localhost:8000";
 
@@ -57,10 +58,14 @@ export default function Chat() {
             className={
               m.role === "user"
                 ? "rounded-2xl px-5 py-4 text-sm whitespace-pre-wrap bg-[#DCE3D0] text-[#3A4530] ml-auto max-w-[80%]"
-                : "rounded-2xl px-5 py-4 text-sm whitespace-pre-wrap bg-[#FBF9F4] border border-[#E4D9C3] text-[#332C24] max-w-[85%]"
+                : "rounded-2xl px-5 py-4 text-sm bg-[#FBF9F4] border border-[#E4D9C3] text-[#332C24] max-w-[85%] space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:font-semibold [&_h2]:font-semibold [&_h3]:font-semibold [&_a]:underline [&_a]:text-[#4B5A3E]"
             }
           >
-            {m.text}
+            {m.role === "user" ? (
+              <span className="whitespace-pre-wrap">{m.text}</span>
+            ) : (
+              <ReactMarkdown>{m.text}</ReactMarkdown>
+            )}
           </div>
         ))}
         {loading && (
