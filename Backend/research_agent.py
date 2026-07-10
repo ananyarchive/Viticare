@@ -2,20 +2,20 @@
 VitiCare — Research Agent
 
 Given a user's question about a vitiligo treatment, this agent:
-  1. Lets Claude decide which tool(s) to call (search PubMed chunks,
-     search ClinicalTrials chunks, or both)
+  1. Lets the LLM (Groq-hosted Llama) decide which tool(s) to call (search
+     PubMed chunks, search ClinicalTrials chunks, or both)
   2. Retrieves the most relevant chunks from Postgres/pgvector
-  3. Has Claude synthesize a grounded, cited, LAYMAN-FRIENDLY answer —
+  3. Has the LLM synthesize a grounded, cited, LAYMAN-FRIENDLY answer —
      never answering from its own memory, always from retrieved evidence
 
-Requires: pip3 install anthropic voyageai python-dotenv psycopg2-binary pgvector
+Requires: pip3 install groq voyageai python-dotenv psycopg2-binary pgvector
 """
 
 import os
 import sys
 import json
 
-import google.generativeai as genai
+from groq import Groq
 import voyageai
 from dotenv import load_dotenv
 
@@ -24,18 +24,18 @@ from db import similarity_search, log_research_query  # noqa: E402
 
 load_dotenv()
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 VOYAGE_API_KEY = os.environ.get("VOYAGE_API_KEY")
 
-if not GEMINI_API_KEY:
-    raise RuntimeError("GEMINI_API_KEY not set. Add it to your .env file.")
+if not GROQ_API_KEY:
+    raise RuntimeError("GROQ_API_KEY not set. Add it to your .env file.")
 if not VOYAGE_API_KEY:
     raise RuntimeError("VOYAGE_API_KEY not set. Add it to your .env file.")
 
-genai.configure(api_key=GEMINI_API_KEY)
+groq_client = Groq(api_key=GROQ_API_KEY)
 voyage_client = voyageai.Client(api_key=VOYAGE_API_KEY)
 
-MODEL = "gemini-2.5-flash"
+MODEL = "llama-3.3-70b-versatile"
 
 SYSTEM_PROMPT = """You are VitiCare's research assistant. You help people understand \
 vitiligo treatments based ONLY on the evidence retrieved by your tools — never from \
@@ -61,31 +61,33 @@ so honestly rather than overstating confidence.
 
 TOOLS = [
     {
-        "function_declarations": [
-            {
-                "name": "search_pubmed_evidence",
-                "description": "Searches embedded PubMed research abstracts about vitiligo treatments for passages relevant to a query.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {"type": "string", "description": "What to search for, e.g. 'tacrolimus effectiveness for facial vitiligo'"}
-                    },
-                    "required": ["query"],
+        "type": "function",
+        "function": {
+            "name": "search_pubmed_evidence",
+            "description": "Searches embedded PubMed research abstracts about vitiligo treatments for passages relevant to a query.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "What to search for, e.g. 'tacrolimus effectiveness for facial vitiligo'"}
                 },
+                "required": ["query"],
             },
-            {
-                "name": "search_clinical_trials_evidence",
-                "description": "Searches embedded ClinicalTrials.gov trial summaries about vitiligo treatments for passages relevant to a query.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {"type": "string", "description": "What to search for, e.g. 'ruxolitinib cream clinical trial results'"}
-                    },
-                    "required": ["query"],
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_clinical_trials_evidence",
+            "description": "Searches embedded ClinicalTrials.gov trial summaries about vitiligo treatments for passages relevant to a query.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "What to search for, e.g. 'ruxolitinib cream clinical trial results'"}
                 },
+                "required": ["query"],
             },
-        ]
-    }
+        },
+    },
 ]
 
 
@@ -101,7 +103,7 @@ def search_by_source(query: str, source_filter: str, top_k: int = 5):
     return filtered
 
 
-def format_results_for_claude(results: list) -> str:
+def format_results_for_llm(results: list) -> str:
     if not results:
         return "No relevant results found."
     formatted = []
@@ -116,56 +118,56 @@ def format_results_for_claude(results: list) -> str:
 
 def ask_research_agent(question: str) -> dict:
     """
-    Runs the full tool-calling loop: Gemini decides which searches to run,
-    we execute them against Postgres, feed results back, and Gemini
+    Runs the full tool-calling loop: the LLM decides which searches to run,
+    we execute them against Postgres, feed results back, and the LLM
     synthesizes a final grounded answer.
     """
-    model = genai.GenerativeModel(
-        model_name=MODEL,
-        system_instruction=SYSTEM_PROMPT,
-        tools=TOOLS,
-    )
-    chat = model.start_chat()
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": question},
+    ]
     all_retrieved_chunk_ids = []
-
-    response = chat.send_message(question)
+    first_turn = True
 
     while True:
-        function_calls = [
-            part.function_call
-            for part in response.candidates[0].content.parts
-            if part.function_call
-        ]
+        response = groq_client.chat.completions.create(
+            model=MODEL,
+            messages=messages,
+            tools=TOOLS,
+            # Force the first turn to call a tool — with tool_choice="auto",
+            # this model occasionally emits a malformed pseudo-function-call
+            # as plain text instead of a real tool call. Forcing "required"
+            # only on turn one (when it must search anyway, per the system
+            # prompt) avoids that failure mode without blocking it from
+            # giving a final text answer on later turns.
+            tool_choice="required" if first_turn else "auto",
+        )
+        first_turn = False
+        message = response.choices[0].message
 
-        if not function_calls:
-            final_text = response.text
+        if not message.tool_calls:
+            final_text = message.content
             log_research_query(question, all_retrieved_chunk_ids, final_text)
             return {
                 "answer": final_text,
                 "sources_used": len(all_retrieved_chunk_ids),
             }
 
-        function_response_parts = []
-        for fc in function_calls:
-            query = fc.args.get("query", question)
+        messages.append(message)
+        for tc in message.tool_calls:
+            args = json.loads(tc.function.arguments)
+            query = args.get("query", question)
             source_filter = (
-                "pubmed" if fc.name == "search_pubmed_evidence" else "clinicaltrials"
+                "pubmed" if tc.function.name == "search_pubmed_evidence" else "clinicaltrials"
             )
             results = search_by_source(query, source_filter)
             all_retrieved_chunk_ids.extend(r["chunk_id"] for r in results)
 
-            function_response_parts.append(
-                genai.protos.Part(
-                    function_response=genai.protos.FunctionResponse(
-                        name=fc.name,
-                        response={"result": format_results_for_claude(results)},
-                    )
-                )
-            )
-
-        response = chat.send_message(
-            genai.protos.Content(parts=function_response_parts)
-        )
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": format_results_for_llm(results),
+            })
 
 
 if __name__ == "__main__":

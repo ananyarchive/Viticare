@@ -12,7 +12,7 @@ For each test question:
 
 Overall context precision = average across all test questions.
 
-Requires: pip3 install anthropic voyageai python-dotenv psycopg2-binary pgvector
+Requires: pip3 install groq voyageai python-dotenv psycopg2-binary pgvector
 Run from project root: python3 Backend/evaluate_retrieval.py
 """
 
@@ -21,7 +21,7 @@ import sys
 import json
 import time
 
-import google.generativeai as genai
+from groq import Groq, RateLimitError
 from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -30,9 +30,11 @@ from db import similarity_search  # noqa: E402
 
 load_dotenv()
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
-JUDGE_MODEL = "gemini-2.5-flash"
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+groq_client = Groq(api_key=GROQ_API_KEY)
+# Judge calls don't need top-tier reasoning, so they use the smaller/faster
+# instant model — this keeps them off the main agent's daily quota.
+JUDGE_MODEL = "llama-3.1-8b-instant"
 
 RESULTS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "eval_results.json")
 
@@ -72,26 +74,26 @@ Respond with ONLY a JSON object, no other text: {{"relevant": true}} or {{"relev
 
 
 def judge_relevance(question: str, passage: str, max_retries: int = 3) -> bool:
-    model = genai.GenerativeModel(model_name=JUDGE_MODEL)
     for attempt in range(max_retries):
         try:
-            response = model.generate_content(
-                JUDGE_PROMPT_TEMPLATE.format(question=question, passage=passage)
+            response = groq_client.chat.completions.create(
+                model=JUDGE_MODEL,
+                messages=[{
+                    "role": "user",
+                    "content": JUDGE_PROMPT_TEMPLATE.format(question=question, passage=passage),
+                }],
             )
-            text = response.text.strip()
+            text = response.choices[0].message.content.strip()
             try:
                 cleaned = text.replace("```json", "").replace("```", "").strip()
                 parsed = json.loads(cleaned)
                 return bool(parsed.get("relevant", False))
             except (json.JSONDecodeError, AttributeError):
                 return "true" in text.lower()
-        except Exception as e:
-            if "429" in str(e) or "ResourceExhausted" in str(e):
-                wait = 20 * (attempt + 1)
-                print(f"  Rate limited, waiting {wait}s before retry...")
-                time.sleep(wait)
-            else:
-                raise
+        except RateLimitError:
+            wait = 20 * (attempt + 1)
+            print(f"  Rate limited, waiting {wait}s before retry...")
+            time.sleep(wait)
     raise RuntimeError("Exceeded max retries due to rate limiting.")
 
 
@@ -115,7 +117,7 @@ def evaluate_question(question: str) -> dict:
             "similarity": round(chunk["similarity"], 3),
             "relevant": is_relevant,
         })
-        time.sleep(13)  # actual free tier limit is 5 requests/minute for gemini-2.5-flash
+        time.sleep(2.5)  # Groq free tier allows ~30 requests/minute for llama-3.1-8b-instant
 
     relevant_count = sum(1 for j in judgments if j["relevant"])
     precision = relevant_count / len(retrieved)
