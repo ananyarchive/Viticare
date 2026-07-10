@@ -1,3 +1,8 @@
 fastapi
 uvicorn[standard]
 python-multipart
+google-generativeai
+voyageai
+python-dotenv
+psycopg2-binary
+pgvector

@@ -13,11 +13,16 @@ Then visit http://localhost:8000/docs for interactive API docs.
 """
 
 import json
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+sys.path.append(str(Path(__file__).resolve().parent))
+from research_agent import ask_research_agent  # noqa: E402
 
 DATA_DIR = Path("Data")
 SEGMENTED_DIR = DATA_DIR / "segmented"
@@ -142,6 +147,25 @@ def get_patient_timeline(patient_id: str):
         "timepoint_count": len(timeline),
         "timeline": timeline,
     }
+
+
+class ResearchQuestion(BaseModel):
+    question: str
+
+
+@app.post("/research/ask")
+def ask_research(payload: ResearchQuestion):
+    """
+    Runs the agentic RAG research agent: the LLM decides which evidence
+    sources to search (PubMed / ClinicalTrials.gov embeddings in pgvector),
+    retrieves relevant chunks, and synthesizes a cited, grounded answer.
+    """
+    if not payload.question.strip():
+        raise HTTPException(status_code=400, detail="Question cannot be empty.")
+    try:
+        return ask_research_agent(payload.question)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Research agent failed: {e}")
 
 
 @app.get("/patients/{patient_id}/summary")
