@@ -29,10 +29,19 @@ This is a portfolio/demo build (V1), not a production medical device. It's built
 
 ### 3. Agentic Research Assistant (RAG)
 - **Real corpus**: 590 documents (420 PubMed abstracts + 170 ClinicalTrials.gov entries) covering vitiligo treatments — tacrolimus, phototherapy, JAK inhibitors, corticosteroids, surgical options, and more — embedded into **1,080 chunks** via Voyage AI, stored in **Postgres + pgvector**.
-- **Tool-calling agent**: given a question, the model decides whether to search PubMed evidence, ClinicalTrials evidence, or both, retrieves real passages, and only then synthesizes an answer — never from memory alone.
+- **Tool-calling agent**: given a question, the model (Groq-hosted `llama-3.3-70b-versatile`) decides whether to search PubMed evidence, ClinicalTrials evidence, or both, retrieves real passages, and only then synthesizes an answer — never from memory alone.
 - **Plain-language by design**: every answer is structured as *what it is → what the evidence shows → worth knowing → sources*, deliberately avoiding front-loaded clinical jargon or alarming side-effect lists, without sacrificing honesty about evidence strength or limitations.
 
 ![Research chat interface](screenshots/chat.png)
+
+### 4. Multi-Agent Orchestration (Vision + Research + Report)
+A single FastAPI endpoint, `POST /patients/{id}/full-report`, chains three agents in sequence to turn raw tracking data into a doctor-visit-ready summary:
+
+1. **Vision Agent** — the CV pipeline above (registration → segmentation → progress tracking); the orchestrator just reads its already-computed output, it doesn't re-run the pipeline per request.
+2. **Research Agent** — the RAG agent above; runs only if the caller supplies a `treatment_question` relevant to the patient's case, and is skipped entirely otherwise.
+3. **Report Agent** (`Backend/report_agent.py`, new) — a Groq-hosted LLM call that synthesizes the Vision Agent's timeline/progress stats and (if present) the Research Agent's grounded answer into a markdown report: an overview, a plain-language progress summary, relevant research context, and data-informed questions to bring to a doctor. It's instructed to never invent numbers not present in the input.
+
+Every stage is timed with `time.perf_counter()` and the real breakdown is returned in the response — see [Multi-Agent Latency](#multi-agent-latency-measured) below for actual measured numbers, not assumed ones.
 
 ---
 
@@ -45,7 +54,7 @@ This is a portfolio/demo build (V1), not a production medical device. It's built
 | Database | PostgreSQL + pgvector |
 | Computer Vision | OpenCV (GrabCut, adaptive thresholding, ORB feature matching) |
 | Embeddings | Voyage AI (voyage-3) |
-| LLM (research agent) | Gemini 2.5 Flash (tool-calling / function-calling) |
+| LLM (research + report agents) | Groq (`llama-3.3-70b-versatile`; `llama-3.1-8b-instant` for eval judging) |
 | Data Sources | NCBI PubMed E-utilities API, ClinicalTrials.gov API v2 |
 
 ---
@@ -54,16 +63,56 @@ This is a portfolio/demo build (V1), not a production medical device. It's built
 
 Using a RAGAS-style LLM-as-judge methodology: for each test question, the top-5 retrieved chunks are independently judged for genuine relevance (not just topical similarity), and precision = relevant / retrieved.
 
-**Partial results (4 of 15 test questions completed):**
+**Full results: 30 questions, stratified 5-per-category across the six treatment types actually present in the corpus** (`Backend/evaluate_retrieval.py`, results in `Backend/eval_results.json`):
 
-| Question | Precision |
+| Category | Precision |
 |---|---|
-| Does tacrolimus work for treating vitiligo? | 1.0 |
-| What is narrowband UVB phototherapy and how effective is it? | 0.8 |
-| How does ruxolitinib cream work for repigmentation? | 0.2 |
-| Are topical corticosteroids effective for vitiligo? | 1.0 |
+| Tacrolimus | 0.96 |
+| Systemic / emerging | 0.96 |
+| Corticosteroids | 0.92 |
+| Surgical | 0.88 |
+| Phototherapy | 0.84 |
+| JAK inhibitors | 0.84 |
+| **Overall (30 questions)** | **0.90** |
 
-**Average so far: 0.75.** Full 15-question evaluation is in progress (limited by free-tier API rate limits during development). The ruxolitinib result flags a genuine, identified weak spot — likely due to thinner corpus coverage on JAK inhibitors relative to more established treatments — and is a concrete, prioritized target for retrieval improvement (candidate fix: adding a reranking step, discussed below).
+An earlier partial run (4 questions) had flagged a ruxolitinib/JAK-inhibitor question scoring 0.2, suspected to be thin corpus coverage. Before assuming that, the corpus was checked directly (`SELECT COUNT(*) FROM documents WHERE raw_text ILIKE '%ruxolitinib%'` → 47 matching documents) — coverage was not thin, so that low score reflected retrieval noise, not a data gap. The fuller 30-question stratified run confirms JAK inhibitors score in line with other categories (0.84), consistent with that diagnosis.
+
+---
+
+## Multi-Agent Latency (measured)
+
+The `/patients/{id}/full-report` orchestrator endpoint's end-to-end latency was measured directly with `time.perf_counter()` around each agent stage (not assumed) across multiple real requests against the live backend:
+
+| Scenario | Vision Agent | Research Agent | Report Agent | **Total** |
+|---|---|---|---|---|
+| Full pipeline (Vision + Research + Report), uncontended | ~0.01s | ~2.8s | ~1.3s | **~4.2s** (avg of 3 clean trials: 4.13s, 4.17s, 4.32s) |
+| Vision + Report only (no `treatment_question` supplied) | ~0.01s | 0s (skipped) | ~1.2s | **~1.2s** (avg of 2 trials) |
+
+**Two honest caveats, found by actually measuring instead of assuming:**
+- **Latency is sensitive to Groq API contention.** Five back-to-back requests fired without spacing (competing with this session's own eval-harness run for the same rate limit) measured 10.9s–34.1s, averaging ~24.6s — over 5x the uncontended number. The architecture's own per-stage cost is genuinely ~4.2s; shared third-party rate limits are a real, separate operational risk worth knowing about before treating "~4.2s" as a hard guarantee under load.
+- **The Groq-hosted model occasionally emits a malformed tool call** (observed in roughly 1 of 6 sampled requests) that fails Research Agent tool-call validation. The orchestrator catches this and degrades gracefully — it still returns a full report (Vision + Report only, research context omitted) rather than failing the request.
+
+---
+
+## Project Metrics Summary
+
+All numbers below are measured from the actual pipeline/data/code in this repo, not aspirational — see the sections above for how each was computed.
+
+| Area | Metric |
+|---|---|
+| CV pipeline — triage | 199 patient folders passed dataset triage |
+| CV pipeline — registration | 246 compatible baseline→follow-up pairs attempted, 238 succeeded (**96.7%** success rate); 153 additional pairs correctly skipped as incompatible imaging types (e.g. normal photo vs. Wood's lamp scan) rather than forced into a broken alignment |
+| CV pipeline — segmentation | 598 timepoints segmented across 199 folders; 129 timepoints have full fixed-reference progress/heatmap stats |
+| CV pipeline — curation | 20 of 152 manually-reviewed patient folders marked demo-quality ("good") |
+| Research corpus | 590 documents (420 PubMed + 170 ClinicalTrials.gov) → 1,080 embedded chunks (Voyage AI `voyage-3`) in Postgres + pgvector |
+| Retrieval evaluation | **0.90 overall context precision** across 30 questions, stratified 5-per-category across 6 treatment types |
+| Multi-agent orchestration | 3-agent pipeline (Vision → Research → Report) behind one FastAPI endpoint; **~4.2s measured end-to-end latency** uncontended, ~1.2s when the Research Agent stage is skipped |
+
+---
+
+## Resume / Portfolio Description
+
+> Built VitiCare, a full-stack vitiligo-tracking platform combining a classical computer-vision pipeline (OpenCV registration + segmentation) with an evidence-grounded RAG research agent over a 590-document/1,080-chunk pgvector corpus, reaching **0.90 context precision** across a 30-question stratified evaluation. Architected a 3-agent FastAPI orchestration pipeline (Vision, Research, Report agents) that synthesizes doctor-visit-ready clinical summaries, measuring **~4.2s real end-to-end latency** via direct instrumentation. Achieved a **96.7% image-registration success rate** across a 199-patient longitudinal imaging dataset.
 
 ---
 
@@ -71,11 +120,10 @@ Using a RAGAS-style LLM-as-judge methodology: for each test question, the top-5 
 
 Being upfront about these is intentional — they reflect real engineering tradeoffs made under a defined timeline, not oversights.
 
-- **Chat interface response handling**: the frontend chat currently has an intermittent issue displaying the agent's response after submission — under active debugging.
 - **Segmentation false positives**: classical thresholding correctly identifies "locally bright" regions, but Wood's lamp imaging causes other anatomical features (fingernails, ear cartilage) to fluoresce similarly to depigmented skin. Shape-based filtering reduces but doesn't eliminate this. **Planned V2**: manually annotate a labeled mask dataset and train/fine-tune a proper segmentation model to replace the classical thresholding approach.
 - **2D registration limitations**: homography-based alignment handles translation/scale/in-plane rotation well, but not full 3D head/body pose changes between photos.
-- **Reference-frame selection**: the fixed-region tracking approach currently doesn't account for manually-curated exclusions when selecting which frame to use as the reference — an edge case to patch.
-- **Retrieval precision on underrepresented topics** (e.g. ruxolitinib): candidate fix is adding a cross-encoder reranking step on top of vector similarity search.
+- **Orchestrator latency under API contention**: the ~4.2s measured full-pipeline latency holds under normal single-request conditions, but degrades significantly (measured 11–34s) when the Research Agent's calls compete with other concurrent Groq API usage against the same rate limit — see [Multi-Agent Latency](#multi-agent-latency-measured).
+- **Intermittent malformed tool calls**: the Groq-hosted model occasionally emits a tool call the SDK can't validate, failing the Research Agent step for that request (~1 in 6 sampled). The orchestrator degrades gracefully rather than crashing, but the underlying model quirk isn't fixed.
 - **Camera-guidance capture** (brightness/orientation/framing checks) and the consistency/streak engine are planned but not yet built in this version.
 - **Not clinically validated**: this is a demo/portfolio project using public research data and a public clinical imaging dataset — not a diagnostic or medical device.
 
@@ -88,7 +136,7 @@ Being upfront about these is intentional — they reflect real engineering trade
 
 ## Setup
 
-See `Backend/`, `Frontend/`, and `Notebooks/` for component-specific setup. Requires PostgreSQL with the `pgvector` extension, a Voyage AI API key, and a Gemini API key.
+See `Backend/`, `Frontend/`, and `Notebooks/` for component-specific setup. Requires PostgreSQL with the `pgvector` extension, a Voyage AI API key, and a Groq API key.
 
 ```bash
 # Backend
