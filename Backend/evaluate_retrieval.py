@@ -40,23 +40,52 @@ RESULTS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "eval_re
 
 TOP_K = 5
 
-# Realistic test questions spanning different treatments/topics in the corpus
+# Stratified test set: 5 questions per treatment category actually present in
+# the corpus (tacrolimus, phototherapy, JAK inhibitors, corticosteroids,
+# surgical, systemic/emerging), rather than an arbitrary/unstratified list —
+# this makes the "stratified sample" claim defensible.
 TEST_QUESTIONS = [
-    "Does tacrolimus work for treating vitiligo?",
-    "What is narrowband UVB phototherapy and how effective is it for vitiligo?",
-    "How does ruxolitinib cream work for vitiligo repigmentation?",
-    "Are topical corticosteroids effective for vitiligo?",
-    "What are the surgical options for vitiligo like melanocyte transplantation?",
-    "Does vitamin D supplementation help with vitiligo?",
-    "How is vitiligo treated differently in children versus adults?",
-    "What is the psychological impact of vitiligo on quality of life?",
-    "What causes vitiligo at a biological/autoimmune level?",
-    "How effective is excimer laser treatment for vitiligo compared to other options?",
-    "What is segmental vitiligo and how is it treated differently from generalized vitiligo?",
-    "What are realistic expectations for how long vitiligo treatment takes to show results?",
-    "Does combining phototherapy with topical treatments work better than either alone?",
-    "What is the relapse rate after successful vitiligo treatment?",
-    "Are there genetic factors that predict who gets vitiligo?",
+    # --- Tacrolimus ---
+    {"category": "tacrolimus", "question": "Does tacrolimus work for treating vitiligo?"},
+    {"category": "tacrolimus", "question": "Is topical tacrolimus more effective for facial and neck vitiligo than for lesions on the body?"},
+    {"category": "tacrolimus", "question": "How does tacrolimus ointment compare to topical corticosteroids in effectiveness for vitiligo?"},
+    {"category": "tacrolimus", "question": "Is long-term tacrolimus use considered safe for children with vitiligo?"},
+    {"category": "tacrolimus", "question": "Does combining tacrolimus with phototherapy improve repigmentation compared to tacrolimus alone?"},
+
+    # --- Phototherapy ---
+    {"category": "phototherapy", "question": "What is narrowband UVB phototherapy and how effective is it for vitiligo?"},
+    {"category": "phototherapy", "question": "How effective is excimer laser treatment for vitiligo compared to other phototherapy options?"},
+    {"category": "phototherapy", "question": "What is PUVA therapy and how does it compare to narrowband UVB for treating vitiligo?"},
+    {"category": "phototherapy", "question": "How many phototherapy sessions are typically needed before visible repigmentation appears?"},
+    {"category": "phototherapy", "question": "Does combining phototherapy with topical treatments work better than either approach alone?"},
+
+    # --- JAK inhibitors ---
+    {"category": "jak_inhibitors", "question": "How does ruxolitinib cream work for vitiligo repigmentation?"},
+    {"category": "jak_inhibitors", "question": "What were the results of the TRuE-V phase 3 clinical trials for ruxolitinib cream?"},
+    {"category": "jak_inhibitors", "question": "Are oral JAK inhibitors being studied as a treatment for vitiligo?"},
+    {"category": "jak_inhibitors", "question": "What side effects are associated with topical ruxolitinib cream for vitiligo?"},
+    {"category": "jak_inhibitors", "question": "How does ritlecitinib compare to ruxolitinib for treating vitiligo?"},
+
+    # --- Corticosteroids ---
+    {"category": "corticosteroids", "question": "Are topical corticosteroids effective for treating vitiligo?"},
+    {"category": "corticosteroids", "question": "What is the role of intralesional corticosteroid injections in vitiligo treatment?"},
+    {"category": "corticosteroids", "question": "Are oral mini-pulse corticosteroids used to stop the progression of active vitiligo?"},
+    {"category": "corticosteroids", "question": "What are the risks of long-term topical corticosteroid use on facial vitiligo?"},
+    {"category": "corticosteroids", "question": "How do potent topical corticosteroids compare to tacrolimus for treating childhood vitiligo?"},
+
+    # --- Surgical ---
+    {"category": "surgical", "question": "What are the surgical options for vitiligo, like melanocyte transplantation?"},
+    {"category": "surgical", "question": "What is segmental vitiligo and why is it often a better candidate for surgical treatment?"},
+    {"category": "surgical", "question": "How does suction blister grafting work for stable vitiligo patches?"},
+    {"category": "surgical", "question": "Who is considered a good candidate for melanocyte-keratinocyte transplantation procedures?"},
+    {"category": "surgical", "question": "What is the success rate of surgical repigmentation techniques for stable vitiligo?"},
+
+    # --- Systemic / emerging ---
+    {"category": "systemic_emerging", "question": "Does vitamin D supplementation help with vitiligo?"},
+    {"category": "systemic_emerging", "question": "What causes vitiligo at a biological/autoimmune level?"},
+    {"category": "systemic_emerging", "question": "Are there genetic factors that predict who is likely to develop vitiligo?"},
+    {"category": "systemic_emerging", "question": "Are antioxidant supplements effective as an adjunct treatment for vitiligo?"},
+    {"category": "systemic_emerging", "question": "What is the relapse rate after successful vitiligo repigmentation treatment?"},
 ]
 
 JUDGE_PROMPT_TEMPLATE = """You are an impartial evaluator judging retrieval quality for a \
@@ -103,11 +132,11 @@ def retrieve_combined(question: str, top_k: int = TOP_K):
     return similarity_search(embedding, top_k=top_k)
 
 
-def evaluate_question(question: str) -> dict:
+def evaluate_question(question: str, category: str) -> dict:
     retrieved = retrieve_combined(question, top_k=TOP_K)
 
     if not retrieved:
-        return {"question": question, "precision": 0.0, "retrieved_count": 0, "relevant_count": 0}
+        return {"question": question, "category": category, "precision": 0.0, "retrieved_count": 0, "relevant_count": 0}
 
     judgments = []
     for chunk in retrieved:
@@ -124,6 +153,7 @@ def evaluate_question(question: str) -> dict:
 
     return {
         "question": question,
+        "category": category,
         "precision": round(precision, 3),
         "retrieved_count": len(retrieved),
         "relevant_count": relevant_count,
@@ -131,13 +161,24 @@ def evaluate_question(question: str) -> dict:
     }
 
 
+def category_breakdown(results: list) -> dict:
+    by_category = {}
+    for r in results:
+        by_category.setdefault(r["category"], []).append(r["precision"])
+    return {
+        cat: round(sum(scores) / len(scores), 3)
+        for cat, scores in sorted(by_category.items())
+    }
+
+
 def main():
-    print(f"Evaluating context precision across {len(TEST_QUESTIONS)} test questions...\n")
+    print(f"Evaluating context precision across {len(TEST_QUESTIONS)} stratified test questions...\n")
 
     results = []
-    for i, question in enumerate(TEST_QUESTIONS, start=1):
-        print(f"[{i}/{len(TEST_QUESTIONS)}] {question}")
-        result = evaluate_question(question)
+    for i, item in enumerate(TEST_QUESTIONS, start=1):
+        question, category = item["question"], item["category"]
+        print(f"[{i}/{len(TEST_QUESTIONS)}] ({category}) {question}")
+        result = evaluate_question(question, category)
         results.append(result)
         print(f"  Precision: {result['precision']} ({result['relevant_count']}/{result['retrieved_count']} relevant)\n")
 
@@ -146,6 +187,7 @@ def main():
         with open(RESULTS_FILE, "w") as f:
             json.dump({
                 "overall_precision_so_far": round(partial_precision, 3),
+                "precision_by_category_so_far": category_breakdown(results),
                 "questions_completed": len(results),
                 "questions_total": len(TEST_QUESTIONS),
                 "per_question_results": results,
@@ -155,6 +197,8 @@ def main():
 
     print("=" * 60)
     print(f"OVERALL CONTEXT PRECISION: {overall_precision:.3f}")
+    for cat, score in category_breakdown(results).items():
+        print(f"  {cat}: {score}")
     print("=" * 60)
     print(f"\nFull results saved to {RESULTS_FILE}")
 

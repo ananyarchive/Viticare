@@ -1,10 +1,19 @@
 {
-  "overall_precision_so_far": 0.75,
-  "questions_completed": 4,
-  "questions_total": 15,
+  "overall_precision_so_far": 0.9,
+  "precision_by_category_so_far": {
+    "corticosteroids": 0.92,
+    "jak_inhibitors": 0.84,
+    "phototherapy": 0.84,
+    "surgical": 0.88,
+    "systemic_emerging": 0.96,
+    "tacrolimus": 0.96
+  },
+  "questions_completed": 30,
+  "questions_total": 30,
   "per_question_results": [
     {
       "question": "Does tacrolimus work for treating vitiligo?",
+      "category": "tacrolimus",
       "precision": 1.0,
       "retrieved_count": 5,
       "relevant_count": 5,
@@ -37,10 +46,147 @@
       ]
     },
     {
-      "question": "What is narrowband UVB phototherapy and how effective is it for vitiligo?",
+      "question": "Is topical tacrolimus more effective for facial and neck vitiligo than for lesions on the body?",
+      "category": "tacrolimus",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Effectiveness and safety of topical tacrolimus in treatment of vitiligo.",
+          "similarity": 0.792,
+          "relevant": true
+        },
+        {
+          "title": "New treatment modalities for vitiligo: focus on topical immunomodulators.",
+          "similarity": 0.714,
+          "relevant": true
+        },
+        {
+          "title": "Effectiveness and safety of topical tacrolimus in treatment of vitiligo.",
+          "similarity": 0.705,
+          "relevant": true
+        },
+        {
+          "title": "[Vitiligo. Treatment of 12 cases with topical tacrolimus].",
+          "similarity": 0.7,
+          "relevant": true
+        },
+        {
+          "title": "[Vitiligo. Treatment of 12 cases with topical tacrolimus].",
+          "similarity": 0.676,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "How does tacrolimus ointment compare to topical corticosteroids in effectiveness for vitiligo?",
+      "category": "tacrolimus",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Efficacy of Tacrolimus Versus Clobetasol in the Treatment of Vitiligo.",
+          "similarity": 0.779,
+          "relevant": true
+        },
+        {
+          "title": "Value of tacrolimus 0.1% in the treatment of vitiligo in the era of targeted therapy.",
+          "similarity": 0.761,
+          "relevant": true
+        },
+        {
+          "title": "Comparison of Efficacy and Safety of 0.1% Tacrolimus and 0.1% Mometasone Furoate for Adult Vitiligo",
+          "similarity": 0.749,
+          "relevant": true
+        },
+        {
+          "title": "Comparison of Efficacy and Safety of 0.1% Tacrolimus and 0.1% Mometasone Furoate for Adult Vitiligo",
+          "similarity": 0.749,
+          "relevant": true
+        },
+        {
+          "title": "Value of tacrolimus 0.1% in the treatment of vitiligo in the era of targeted therapy.",
+          "similarity": 0.747,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Is long-term tacrolimus use considered safe for children with vitiligo?",
+      "category": "tacrolimus",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Safety and Efficacy of Tacrolimus Ointment Alone in the Treatment of Pediatric Vitiligo: A Systematic Review and Meta-Analysis.",
+          "similarity": 0.756,
+          "relevant": true
+        },
+        {
+          "title": "Oral Tacrolimus vs Dexamethasone Micro-pulse Therapy in Pediatric Rapidly Progressing Vitiligo: A Multicenter RCT",
+          "similarity": 0.711,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of Childhood Vitiligo Using Tacrolimus Ointment with Narrowband Ultraviolet B Phototherapy.",
+          "similarity": 0.691,
+          "relevant": true
+        },
+        {
+          "title": "Value of tacrolimus 0.1% in the treatment of vitiligo in the era of targeted therapy.",
+          "similarity": 0.686,
+          "relevant": true
+        },
+        {
+          "title": "Safety and Efficacy of Tacrolimus Ointment Alone in the Treatment of Pediatric Vitiligo: A Systematic Review and Meta-Analysis.",
+          "similarity": 0.681,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Does combining tacrolimus with phototherapy improve repigmentation compared to tacrolimus alone?",
+      "category": "tacrolimus",
       "precision": 0.8,
       "retrieved_count": 5,
       "relevant_count": 4,
+      "judgments": [
+        {
+          "title": "The effects of tacrolimus plus phototherapy in the treatment of vitiligo: a meta-analysis.",
+          "similarity": 0.715,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of Childhood Vitiligo Using Tacrolimus Ointment with Narrowband Ultraviolet B Phototherapy.",
+          "similarity": 0.642,
+          "relevant": true
+        },
+        {
+          "title": "Maintenance Treatment of Non Segmental Vitiligo With Tacrolimus Ointment 0.1% Versus Control",
+          "similarity": 0.639,
+          "relevant": false
+        },
+        {
+          "title": "Tyrosine Vs Tacrolimus With NB-UVB in Vitiligo",
+          "similarity": 0.627,
+          "relevant": true
+        },
+        {
+          "title": "[Vitiligo. Treatment of 12 cases with topical tacrolimus].",
+          "similarity": 0.625,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is narrowband UVB phototherapy and how effective is it for vitiligo?",
+      "category": "phototherapy",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
       "judgments": [
         {
           "title": "Phototherapy for Vitiligo.",
@@ -55,7 +201,7 @@
         {
           "title": "Narrowband UVB phototherapy in vitiligo: evaluation of results in 53 patients.",
           "similarity": 0.766,
-          "relevant": false
+          "relevant": true
         },
         {
           "title": "Narrowband ultraviolet B phototherapy and 308-nm excimer laser in the treatment of vitiligo: a review.",
@@ -70,20 +216,157 @@
       ]
     },
     {
-      "question": "How does ruxolitinib cream work for vitiligo repigmentation?",
-      "precision": 0.2,
+      "question": "How effective is excimer laser treatment for vitiligo compared to other phototherapy options?",
+      "category": "phototherapy",
+      "precision": 1.0,
       "retrieved_count": 5,
-      "relevant_count": 1,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Effectiveness of a 308-nm excimer laser in treatment of vitiligo: a review.",
+          "similarity": 0.785,
+          "relevant": true
+        },
+        {
+          "title": "A review of monochromatic excimer light in vitiligo.",
+          "similarity": 0.769,
+          "relevant": true
+        },
+        {
+          "title": "Effectiveness of a 308-nm excimer laser in treatment of vitiligo: a review.",
+          "similarity": 0.757,
+          "relevant": true
+        },
+        {
+          "title": "Catecholamines Level in Vitiligo Patients Before and After Excimer Light",
+          "similarity": 0.742,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy and Safety of 308-nm Monochromatic Excimer Lamp Versus Other Phototherapy Devices for Vitiligo: A Systematic Review with Meta-Analysis.",
+          "similarity": 0.733,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is PUVA therapy and how does it compare to narrowband UVB for treating vitiligo?",
+      "category": "phototherapy",
+      "precision": 0.6,
+      "retrieved_count": 5,
+      "relevant_count": 3,
+      "judgments": [
+        {
+          "title": "UVB phototherapy in the treatment of vitiligo: State of the art and clinical perspectives.",
+          "similarity": 0.697,
+          "relevant": true
+        },
+        {
+          "title": "Phototherapy for Vitiligo.",
+          "similarity": 0.687,
+          "relevant": true
+        },
+        {
+          "title": "Ultraviolet-based therapy for vitiligo: what's new?",
+          "similarity": 0.687,
+          "relevant": false
+        },
+        {
+          "title": "Treatment of vitiligo with UV-B radiation vs topical psoralen plus UV-A.",
+          "similarity": 0.686,
+          "relevant": true
+        },
+        {
+          "title": "Narrowband UVB phototherapy in skin conditions beyond psoriasis.",
+          "similarity": 0.675,
+          "relevant": false
+        }
+      ]
+    },
+    {
+      "question": "How many phototherapy sessions are typically needed before visible repigmentation appears?",
+      "category": "phototherapy",
+      "precision": 0.6,
+      "retrieved_count": 5,
+      "relevant_count": 3,
+      "judgments": [
+        {
+          "title": "Phototherapy for Vitiligo: A Systematic Review and Meta-analysis.",
+          "similarity": 0.572,
+          "relevant": true
+        },
+        {
+          "title": "Topical Bimatoprost Solution 0.03%in Stable Vitiligo",
+          "similarity": 0.56,
+          "relevant": false
+        },
+        {
+          "title": "Tyrosine Vs Tacrolimus With NB-UVB in Vitiligo",
+          "similarity": 0.559,
+          "relevant": false
+        },
+        {
+          "title": "Epidermal Cell Transplantation in Vitiligo Skin With and Without Narrow-band Ultraviolet B (UVB) Treatment",
+          "similarity": 0.547,
+          "relevant": true
+        },
+        {
+          "title": "Phototherapy for Vitiligo: A Systematic Review and Meta-analysis.",
+          "similarity": 0.533,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Does combining phototherapy with topical treatments work better than either approach alone?",
+      "category": "phototherapy",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "The efficacy of combined phototherapy with topical therapy in vitiligo: a network meta-analysis.",
+          "similarity": 0.562,
+          "relevant": true
+        },
+        {
+          "title": "Microneedling in Combination with Topical Pimecrolimus 1% versus Topical Pimecrolimus 1% for the Treatment of Refractory Stable Vitiligo: A Randomized Clinical Trial.",
+          "similarity": 0.558,
+          "relevant": true
+        },
+        {
+          "title": "The efficacy of 308-nm excimer laser/light (EL) and topical agent combination therapy versus EL monotherapy for vitiligo: A systematic review and meta-analysis of randomized controlled trials (RCTs).",
+          "similarity": 0.539,
+          "relevant": true
+        },
+        {
+          "title": "Effect of narrow band ultraviolet B phototherapy as monotherapy or combination therapy for vitiligo: a meta-analysis.",
+          "similarity": 0.526,
+          "relevant": true
+        },
+        {
+          "title": "Interventions for vitiligo.",
+          "similarity": 0.523,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "How does ruxolitinib cream work for vitiligo repigmentation?",
+      "category": "jak_inhibitors",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
       "judgments": [
         {
           "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
           "similarity": 0.768,
-          "relevant": false
+          "relevant": true
         },
         {
           "title": "Ruxolitinib cream for treatment of vitiligo: a randomised, controlled, phase 2 trial.",
           "similarity": 0.76,
-          "relevant": false
+          "relevant": true
         },
         {
           "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
@@ -93,44 +376,657 @@
         {
           "title": "Treatment of vitiligo with topical ruxolitinib: a narrative review.",
           "similarity": 0.748,
-          "relevant": false
+          "relevant": true
         },
         {
           "title": "Treatment of vitiligo with ruxolitinib cream in the TRuE-V1 and TRuE-V2 studies: a plain language summary of publication.",
           "similarity": 0.746,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What were the results of the TRuE-V phase 3 clinical trials for ruxolitinib cream?",
+      "category": "jak_inhibitors",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
+          "similarity": 0.706,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of vitiligo with ruxolitinib cream in the TRuE-V1 and TRuE-V2 studies: a plain language summary of publication.",
+          "similarity": 0.69,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of vitiligo with ruxolitinib cream in the TRuE-V1 and TRuE-V2 studies: a plain language summary of publication.",
+          "similarity": 0.69,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of vitiligo with ruxolitinib cream in the TRuE-V1 and TRuE-V2 studies: a plain language summary of publication.",
+          "similarity": 0.685,
+          "relevant": true
+        },
+        {
+          "title": "Ruxolitinib cream for treatment of vitiligo: a randomised, controlled, phase 2 trial.",
+          "similarity": 0.671,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Are oral JAK inhibitors being studied as a treatment for vitiligo?",
+      "category": "jak_inhibitors",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "JAK Inhibitors for the Treatment of Vitiligo: Current Evidence and Emerging Therapeutic Potential.",
+          "similarity": 0.829,
+          "relevant": true
+        },
+        {
+          "title": "Janus kinase inhibitors and the changing landscape of vitiligo management: a scoping review.",
+          "similarity": 0.802,
+          "relevant": true
+        },
+        {
+          "title": "Janus kinase inhibitors and the changing landscape of vitiligo management: a scoping review.",
+          "similarity": 0.801,
+          "relevant": true
+        },
+        {
+          "title": "JAK Inhibitors for the Treatment of Vitiligo: Current Evidence and Emerging Therapeutic Potential.",
+          "similarity": 0.783,
+          "relevant": true
+        },
+        {
+          "title": "Vitiligo: Ruxolitinib and Other Oral Treatment Options Beyond Ruxolitinib.",
+          "similarity": 0.778,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What side effects are associated with topical ruxolitinib cream for vitiligo?",
+      "category": "jak_inhibitors",
+      "precision": 0.8,
+      "retrieved_count": 5,
+      "relevant_count": 4,
+      "judgments": [
+        {
+          "title": "Ruxolitinib cream for treatment of vitiligo: a randomised, controlled, phase 2 trial.",
+          "similarity": 0.779,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of vitiligo with ruxolitinib cream in the TRuE-V1 and TRuE-V2 studies: a plain language summary of publication.",
+          "similarity": 0.757,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy and Safety of Ruxolitinib Cream in Vitiligo by Patient Characteristic Subgroups: Descriptive Pooled Analysis From Two Phase 3 Studies.",
+          "similarity": 0.725,
+          "relevant": true
+        },
+        {
+          "title": "Treatment of vitiligo with topical ruxolitinib: a narrative review.",
+          "similarity": 0.722,
+          "relevant": false
+        },
+        {
+          "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
+          "similarity": 0.718,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "How does ritlecitinib compare to ruxolitinib for treating vitiligo?",
+      "category": "jak_inhibitors",
+      "precision": 0.4,
+      "retrieved_count": 5,
+      "relevant_count": 2,
+      "judgments": [
+        {
+          "title": "Short-term (24\u00a0weeks) treatment efficacy and safety of ruxolitinib cream in participants with vitiligo: a systematic review and meta-analysis.",
+          "similarity": 0.688,
+          "relevant": false
+        },
+        {
+          "title": "Short-term (24\u00a0weeks) treatment efficacy and safety of ruxolitinib cream in participants with vitiligo: a systematic review and meta-analysis.",
+          "similarity": 0.686,
+          "relevant": true
+        },
+        {
+          "title": "Two Phase 3, Randomized, Controlled Trials of Ruxolitinib Cream for Vitiligo.",
+          "similarity": 0.68,
+          "relevant": true
+        },
+        {
+          "title": "Ruxolitinib cream for treatment of vitiligo: a randomised, controlled, phase 2 trial.",
+          "similarity": 0.68,
+          "relevant": false
+        },
+        {
+          "title": "Treatment of vitiligo with topical ruxolitinib: a narrative review.",
+          "similarity": 0.677,
           "relevant": false
         }
       ]
     },
     {
-      "question": "Are topical corticosteroids effective for vitiligo?",
+      "question": "Are topical corticosteroids effective for treating vitiligo?",
+      "category": "corticosteroids",
       "precision": 1.0,
       "retrieved_count": 5,
       "relevant_count": 5,
       "judgments": [
         {
           "title": "Efficacy and Safety of Intralesional Corticosterois in the Treatment of Vitiligo",
-          "similarity": 0.729,
+          "similarity": 0.736,
           "relevant": true
         },
         {
           "title": "Topical treatment and combination approaches for vitiligo: new insights, new developments.",
+          "similarity": 0.728,
+          "relevant": true
+        },
+        {
+          "title": "Betamethasone Phonophoresis For Vitiligo",
+          "similarity": 0.709,
+          "relevant": true
+        },
+        {
+          "title": "Topical treatment and combination approaches for vitiligo: new insights, new developments.",
+          "similarity": 0.7,
+          "relevant": true
+        },
+        {
+          "title": "Betamethasone Phonophoresis For Vitiligo",
+          "similarity": 0.699,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is the role of intralesional corticosteroid injections in vitiligo treatment?",
+      "category": "corticosteroids",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Efficacy and Safety of Intralesional Corticosterois in the Treatment of Vitiligo",
+          "similarity": 0.749,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy and Safety of Intralesional Corticosterois in the Treatment of Vitiligo",
+          "similarity": 0.738,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy of Intralesional Triamcinolone Injection in the Treatment of Vitiligo",
+          "similarity": 0.656,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy and Safety of Intralesional Corticosterois in the Treatment of Vitiligo",
+          "similarity": 0.621,
+          "relevant": true
+        },
+        {
+          "title": "Betamethasone Phonophoresis For Vitiligo",
+          "similarity": 0.596,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Are oral mini-pulse corticosteroids used to stop the progression of active vitiligo?",
+      "category": "corticosteroids",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Randomized controlled study to evaluate the effectiveness of dexamethasone oral minipulse therapy versus oral minocycline in patients with active vitiligo vulgaris.",
+          "similarity": 0.73,
+          "relevant": true
+        },
+        {
+          "title": "A Retrospective Study of Methylprednisolone Mini-Pulse Therapy Combined with Narrow-Band UVB in Non-Segmental Vitiligo.",
+          "similarity": 0.703,
+          "relevant": true
+        },
+        {
+          "title": "Low-dose oral mini-pulse dexamethasone therapy in progressive unstable vitiligo.",
+          "similarity": 0.694,
+          "relevant": true
+        },
+        {
+          "title": "Oral Mini Pulse Dexamethasone in Pediatric Vitiligo",
+          "similarity": 0.682,
+          "relevant": true
+        },
+        {
+          "title": "Oral mini-pulse therapy with betamethasone in vitiligo patients having extensive or fast-spreading disease.",
+          "similarity": 0.681,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What are the risks of long-term topical corticosteroid use on facial vitiligo?",
+      "category": "corticosteroids",
+      "precision": 0.6,
+      "retrieved_count": 5,
+      "relevant_count": 3,
+      "judgments": [
+        {
+          "title": "New treatment modalities for vitiligo: focus on topical immunomodulators.",
+          "similarity": 0.588,
+          "relevant": false
+        },
+        {
+          "title": "Effect of Fluticasone Proprionate 0.05% on Narrow Band UV-B in Active Vitiligo",
+          "similarity": 0.587,
+          "relevant": true
+        },
+        {
+          "title": "Effectiveness of a combined 308-nm excimer lamp and topical mid-potent steroid treatment for facial vitiligo: a preliminary, randomized double-blinded controlled study.",
+          "similarity": 0.57,
+          "relevant": true
+        },
+        {
+          "title": "Comparison of Efficacy and Safety of 0.1% Tacrolimus and 0.1% Mometasone Furoate for Adult Vitiligo",
+          "similarity": 0.566,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy and Safety of Intralesional Corticosterois in the Treatment of Vitiligo",
+          "similarity": 0.558,
+          "relevant": false
+        }
+      ]
+    },
+    {
+      "question": "How do potent topical corticosteroids compare to tacrolimus for treating childhood vitiligo?",
+      "category": "corticosteroids",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Oral Tacrolimus vs Dexamethasone Micro-pulse Therapy in Pediatric Rapidly Progressing Vitiligo: A Multicenter RCT",
+          "similarity": 0.773,
+          "relevant": true
+        },
+        {
+          "title": "Safety and Efficacy of Tacrolimus Ointment Alone in the Treatment of Pediatric Vitiligo: A Systematic Review and Meta-Analysis.",
+          "similarity": 0.723,
+          "relevant": true
+        },
+        {
+          "title": "Value of tacrolimus 0.1% in the treatment of vitiligo in the era of targeted therapy.",
+          "similarity": 0.719,
+          "relevant": true
+        },
+        {
+          "title": "Safety and Efficacy of Tacrolimus Ointment Alone in the Treatment of Pediatric Vitiligo: A Systematic Review and Meta-Analysis.",
+          "similarity": 0.695,
+          "relevant": true
+        },
+        {
+          "title": "Oral Tacrolimus vs Dexamethasone Micro-pulse Therapy in Pediatric Rapidly Progressing Vitiligo: A Multicenter RCT",
+          "similarity": 0.694,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What are the surgical options for vitiligo, like melanocyte transplantation?",
+      "category": "surgical",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.802,
+          "relevant": true
+        },
+        {
+          "title": "Vitiligo Surgery: Shuffling Melanocytes.",
+          "similarity": 0.784,
+          "relevant": true
+        },
+        {
+          "title": "Surgical Treatment of Vitiligo.",
+          "similarity": 0.746,
+          "relevant": true
+        },
+        {
+          "title": "Transplantation of Autologous Non-Cultured Extracted Hair Follicle Outer Root Sheath Cell Suspension and Mini Punch Graft for Stable Non-Segmental Vitiligo Lesions",
+          "similarity": 0.731,
+          "relevant": true
+        },
+        {
+          "title": "Surgical procedures and innovative approaches for vitiligo regenerative treatment and melanocytorrhagy.",
+          "similarity": 0.728,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is segmental vitiligo and why is it often a better candidate for surgical treatment?",
+      "category": "surgical",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Efficacy and safety of traditional and surgical treatment modalities in segmental vitiligo: A review article.",
+          "similarity": 0.715,
+          "relevant": true
+        },
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.66,
+          "relevant": true
+        },
+        {
+          "title": "Segmental vitiligo: autoimmune pathogenesis, neuronal mechanisms, and somatic mosaicism.",
+          "similarity": 0.66,
+          "relevant": true
+        },
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.64,
+          "relevant": true
+        },
+        {
+          "title": "Surgical Treatment of Vitiligo.",
+          "similarity": 0.638,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "How does suction blister grafting work for stable vitiligo patches?",
+      "category": "surgical",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Suction blister epidermal grafting using a modified suction method in the treatment of stable vitiligo: a retrospective study.",
+          "similarity": 0.705,
+          "relevant": true
+        },
+        {
+          "title": "Efficacy of suction blister epidermal grafting with concomitant phototherapy in vitiligo treatment.",
+          "similarity": 0.703,
+          "relevant": true
+        },
+        {
+          "title": "Suction blister epidermal grafting versus punch skin grafting in recalcitrant and stable vitiligo.",
+          "similarity": 0.672,
+          "relevant": true
+        },
+        {
+          "title": "Suction blister epidermal grafting for management of eyelid vitiligo: special considerations.",
+          "similarity": 0.664,
+          "relevant": true
+        },
+        {
+          "title": "Ultrathin Skin Grafting Versus Suction Blister Epidermal Grafting in the Treatment of Resistant Stable Vitiligo: A Self-Controlled Comparative Study.",
+          "similarity": 0.652,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Who is considered a good candidate for melanocyte-keratinocyte transplantation procedures?",
+      "category": "surgical",
+      "precision": 0.8,
+      "retrieved_count": 5,
+      "relevant_count": 4,
+      "judgments": [
+        {
+          "title": "Evaluating the Efficacy of the Melanocyte Keratinocyte Transplantation Procedure in the Treatment of Vitiligo",
+          "similarity": 0.644,
+          "relevant": true
+        },
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.634,
+          "relevant": true
+        },
+        {
+          "title": "Autologous Cellular Graft in Surgical Treatment of Vitiligo",
+          "similarity": 0.603,
+          "relevant": false
+        },
+        {
+          "title": "Practical guidelines for the treatment of vitiligo with the melanocyte-keratinocyte transplantation procedure.",
+          "similarity": 0.593,
+          "relevant": true
+        },
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.593,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is the success rate of surgical repigmentation techniques for stable vitiligo?",
+      "category": "surgical",
+      "precision": 0.6,
+      "retrieved_count": 5,
+      "relevant_count": 3,
+      "judgments": [
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.721,
+          "relevant": false
+        },
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.7,
+          "relevant": false
+        },
+        {
+          "title": "A Novel Surgical Method in the Treatment of Unstable Vitiligo",
+          "similarity": 0.682,
+          "relevant": true
+        },
+        {
+          "title": "Ultrathin Skin Grafting Versus Suction Blister Epidermal Grafting in the Treatment of Resistant Stable Vitiligo: A Self-Controlled Comparative Study.",
+          "similarity": 0.676,
+          "relevant": true
+        },
+        {
+          "title": "Suction blister epidermal grafting using a modified suction method in the treatment of stable vitiligo: a retrospective study.",
+          "similarity": 0.671,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Does vitamin D supplementation help with vitiligo?",
+      "category": "systemic_emerging",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Using a Topical Formulation of Vitamin D for the Treatment of Vitiligo: A Systematic Review.",
+          "similarity": 0.754,
+          "relevant": true
+        },
+        {
+          "title": "The role of vitamin D in melanogenesis with an emphasis on vitiligo.",
+          "similarity": 0.747,
+          "relevant": true
+        },
+        {
+          "title": "The role of vitamin D in melanogenesis with an emphasis on vitiligo.",
+          "similarity": 0.728,
+          "relevant": true
+        },
+        {
+          "title": "Vitamin D Deficiency in Patients With Vitiligo: A Cross-Sectional Study From Basrah, Iraq.",
+          "similarity": 0.727,
+          "relevant": true
+        },
+        {
+          "title": "Vitamin D supplementation can enhance therapeutic effects of excimer laser in patients with vitiligo.",
+          "similarity": 0.726,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What causes vitiligo at a biological/autoimmune level?",
+      "category": "systemic_emerging",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Vitiligo: A focus on pathogenesis and its therapeutic implications.",
+          "similarity": 0.699,
+          "relevant": true
+        },
+        {
+          "title": "Immunopathogenesis of vitiligo.",
+          "similarity": 0.696,
+          "relevant": true
+        },
+        {
+          "title": "Genetic and immune dysregulation in vitiligo: Insights into autoimmune mechanisms and disease pathogenesis.",
+          "similarity": 0.688,
+          "relevant": true
+        },
+        {
+          "title": "Evidence for an autoimmune pathogenesis of vitiligo.",
+          "similarity": 0.68,
+          "relevant": true
+        },
+        {
+          "title": "Catecholamines Level in Vitiligo Patients Before and After Excimer Light",
+          "similarity": 0.677,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "Are there genetic factors that predict who is likely to develop vitiligo?",
+      "category": "systemic_emerging",
+      "precision": 0.8,
+      "retrieved_count": 5,
+      "relevant_count": 4,
+      "judgments": [
+        {
+          "title": "Current aspects of vitiligo genetics.",
+          "similarity": 0.71,
+          "relevant": true
+        },
+        {
+          "title": "Genetic Susceptibility to Vitiligo: GWAS Approaches for Identifying Vitiligo Susceptibility Genes and Loci.",
+          "similarity": 0.707,
+          "relevant": true
+        },
+        {
+          "title": "Genetics of Vitiligo: A Review.",
+          "similarity": 0.682,
+          "relevant": true
+        },
+        {
+          "title": "The genetic architecture of vitiligo.",
+          "similarity": 0.674,
+          "relevant": true
+        },
+        {
+          "title": "Genetic Susceptibility to Vitiligo: GWAS Approaches for Identifying Vitiligo Susceptibility Genes and Loci.",
+          "similarity": 0.666,
+          "relevant": false
+        }
+      ]
+    },
+    {
+      "question": "Are antioxidant supplements effective as an adjunct treatment for vitiligo?",
+      "category": "systemic_emerging",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Critical appraisal of the oxidative stress pathway in vitiligo: a systematic review and meta-analysis.",
+          "similarity": 0.748,
+          "relevant": true
+        },
+        {
+          "title": "The Role of Diet and Supplements in Vitiligo Management.",
+          "similarity": 0.736,
+          "relevant": true
+        },
+        {
+          "title": "Antioxidants and narrow band-UVB in the treatment of vitiligo: a double-blind placebo controlled trial.",
+          "similarity": 0.728,
+          "relevant": true
+        },
+        {
+          "title": "Critical appraisal of the oxidative stress pathway in vitiligo: a systematic review and meta-analysis.",
           "similarity": 0.717,
           "relevant": true
         },
         {
-          "title": "Betamethasone Phonophoresis For Vitiligo",
-          "similarity": 0.702,
+          "title": "Response of vitiligo to narrowband ultraviolet B and oral antioxidants.",
+          "similarity": 0.715,
+          "relevant": true
+        }
+      ]
+    },
+    {
+      "question": "What is the relapse rate after successful vitiligo repigmentation treatment?",
+      "category": "systemic_emerging",
+      "precision": 1.0,
+      "retrieved_count": 5,
+      "relevant_count": 5,
+      "judgments": [
+        {
+          "title": "Recurrence and risk factors in cured patients with vitiligo: A\u00a0real-life single-center retrospective study.",
+          "similarity": 0.723,
           "relevant": true
         },
         {
-          "title": "Topical treatment and combination approaches for vitiligo: new insights, new developments.",
+          "title": "Recurrence and relapse in nonsegmental vitiligo: phenotypic and autoimmune predictors from a large retrospective cohort.",
+          "similarity": 0.707,
+          "relevant": true
+        },
+        {
+          "title": "Long-Term Effects and Prognosis Following Suction Blister Epidermal Grafting in Vitiligo Patients.",
           "similarity": 0.691,
           "relevant": true
         },
         {
-          "title": "Betamethasone Phonophoresis For Vitiligo",
-          "similarity": 0.688,
+          "title": "Psoralen photochemotherapy (PUVA) is only moderately effective in widespread vitiligo: a 10-year retrospective study.",
+          "similarity": 0.678,
+          "relevant": true
+        },
+        {
+          "title": "Maintenance Treatment of Non Segmental Vitiligo With Tacrolimus Ointment 0.1% Versus Control",
+          "similarity": 0.671,
           "relevant": true
         }
       ]
