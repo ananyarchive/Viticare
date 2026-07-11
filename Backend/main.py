@@ -14,7 +14,9 @@ Then visit http://localhost:8000/docs for interactive API docs.
 
 import json
 import sys
+import time
 from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -23,6 +25,7 @@ from pydantic import BaseModel
 
 sys.path.append(str(Path(__file__).resolve().parent))
 from research_agent import ask_research_agent  # noqa: E402
+from report_agent import generate_report  # noqa: E402
 
 DATA_DIR = Path("Data")
 SEGMENTED_DIR = DATA_DIR / "segmented"
@@ -194,4 +197,63 @@ def get_patient_summary(patient_id: str):
         "latest_repigmentation_pct": latest.get("repigmentation_pct_of_region"),
         "latest_mean_brightness_change": latest.get("mean_brightness_change"),
         "trend": "improving" if latest.get("mean_brightness_change", 0) < 0 else "progressing/stable",
+    }
+
+
+class FullReportRequest(BaseModel):
+    # Optional: if the patient has a treatment question relevant to their
+    # case, the orchestrator will run the Research Agent and fold grounded
+    # evidence into the final report. Omit to skip that stage entirely.
+    treatment_question: Optional[str] = None
+
+
+@app.post("/patients/{patient_id}/full-report")
+def generate_full_report(patient_id: str, payload: FullReportRequest = FullReportRequest()):
+    """
+    Orchestrator endpoint: runs the Vision Agent (reads already-computed CV
+    output), optionally the Research Agent (if a treatment question is
+    relevant), then the Report Agent (synthesizes everything into one
+    doctor-visit-ready markdown report) — in sequence, timing each stage
+    with perf_counter so end-to-end latency is a real measurement, not an
+    assumption.
+    """
+    timing = {}
+    total_start = time.perf_counter()
+
+    # 1. Vision Agent — already computed by the CV pipeline; this just reads it
+    stage_start = time.perf_counter()
+    timeline_response = get_patient_timeline(patient_id)
+    summary_response = get_patient_summary(patient_id)
+    timing["vision_agent_s"] = round(time.perf_counter() - stage_start, 3)
+
+    # 2. Research Agent — only runs if a treatment question was given
+    stage_start = time.perf_counter()
+    research_context = None
+    if payload.treatment_question and payload.treatment_question.strip():
+        try:
+            research_result = ask_research_agent(payload.treatment_question)
+            research_context = research_result["answer"]
+        except Exception as e:
+            research_context = None
+            timing["research_agent_error"] = str(e)
+    timing["research_agent_s"] = round(time.perf_counter() - stage_start, 3)
+
+    # 3. Report Agent — synthesizes the final markdown report
+    stage_start = time.perf_counter()
+    report_markdown = generate_report(
+        patient_id,
+        timeline_response["timeline"],
+        summary_response,
+        research_context=research_context,
+    )
+    timing["report_agent_s"] = round(time.perf_counter() - stage_start, 3)
+
+    timing["total_s"] = round(time.perf_counter() - total_start, 3)
+
+    return {
+        "patient_id": patient_id,
+        "treatment_question": payload.treatment_question,
+        "research_agent_ran": research_context is not None,
+        "report_markdown": report_markdown,
+        "timing_seconds": timing,
     }
